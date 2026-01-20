@@ -75,7 +75,7 @@
 
     /* Modal (Loading/Success) */
     .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
-    .modal-content { background: var(--surface); padding: 40px; border-radius: 24px; border: 1px solid var(--border); text-align: center; max-width: 400px; width: 100%; }
+    .modal-content { background: var(--surface); padding: 40px; border-radius: 24px; border: 1px solid var(--border); text-align: center; max-width: 400px; width: 100%; transition: all 0.3s ease; }
     .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -308,9 +308,11 @@
 
   <div id="loadingModal" class="modal">
     <div class="modal-content">
-      <div class="spinner"></div>
-      <h3 style="color:#fff; margin-bottom:10px;">訂單處理中...</h3>
-      <p>正在建立您的專屬能量檔案</p>
+      <div id="modalBody">
+        <div class="spinner"></div>
+        <h3 style="color:#fff; margin-bottom:10px;">訂單處理中...</h3>
+        <p>正在建立您的專屬能量檔案</p>
+      </div>
     </div>
   </div>
 
@@ -402,7 +404,17 @@
     async function submitFinalOrder() {
       if (orderList.length === 0) { alert("名單是空的！"); return; }
       
+      // 1. 顯示「處理中」Modal
       const modal = document.getElementById('loadingModal');
+      const modalBody = document.getElementById('modalBody');
+      
+      // 重置為 Loading 狀態
+      modalBody.innerHTML = `
+        <div class="spinner"></div>
+        <h3 style="color:#fff; margin-bottom:10px;">訂單處理中...</h3>
+        <p>正在建立您的專屬能量檔案</p>
+      `;
+      
       modal.style.display = 'flex';
 
       const dataToInsert = orderList.map(person => ({
@@ -416,22 +428,31 @@
         created_at: new Date()
       }));
 
-      // 使用 sbClient 寫入 2026WAVE 資料表
+      // 2. 寫入資料庫
       const { data, error } = await sbClient
         .from('2026WAVE')
         .insert(dataToInsert);
 
-      modal.style.display = 'none';
-
       if (error) {
         console.error('Supabase Error:', error);
+        modal.style.display = 'none'; // 失敗時關閉 Modal
         alert("資料傳送失敗，請檢查網路或聯繫客服。");
       } else {
-        // 🔥 更新：成功後，先開啟新視窗，再跳出提示，避免被阻擋
-        alert("🎉 訂單已送出！\n\n系統已完成資料庫定錨。\n按下確定後，將為您開啟【新視窗】進行付款...\n(原視窗保留讓您核對金額)");
-        
-        // 使用 window.open 開啟新分頁
-        window.open("https://p.ecpay.com.tw/58E73CC", "_blank");
+        // 3. 🔥 成功！不關閉 Modal，而是「原地變身」為付款引導
+        // 這樣用戶點擊按鈕時，就是「主動點擊」，瀏覽器絕對不會擋
+        modalBody.innerHTML = `
+          <div style="font-size:48px; margin-bottom:16px;">🎉</div>
+          <h3 style="color:#fff; margin-bottom:12px;">訂單已成立！</h3>
+          <p style="margin-bottom:24px; color:#94a3b8; font-size:14px;">資料已安全存檔。<br>請點擊下方按鈕，開啟新視窗完成付款。</p>
+          
+          <a href="https://p.ecpay.com.tw/58E73CC" target="_blank" class="btn btn-primary" style="width:100%; text-decoration:none; display:flex; margin-bottom:12px;">
+            前往付款 (開啟新視窗) ➔
+          </a>
+          
+          <button onclick="location.reload()" class="btn btn-outline" style="width:100%; border:none; font-size:13px; color:#64748b;">
+            已完成付款？關閉視窗
+          </button>
+        `;
       }
     }
   </script>
