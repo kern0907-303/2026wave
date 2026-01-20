@@ -339,8 +339,6 @@
       });
     });
 
-    function updateTempPrice() {} // 暫存
-
     function applyCombo(type) {
       document.querySelectorAll('input[name="lamp"]').forEach(b => b.checked = false);
       const lamps = document.querySelectorAll('input[name="lamp"]');
@@ -352,6 +350,7 @@
     }
     function s(val){ const e=document.querySelector(`input[value="${val}"]`); if(e) e.checked=true; }
 
+    // 加入訂單暫存區 (修正版：儲存檔案物件)
     function addToOrder() {
       const lamps = Array.from(document.querySelectorAll('input[name="lamp"]:checked'));
       if(lamps.length === 0) { alert("請至少勾選一個頻率！"); return; }
@@ -360,16 +359,23 @@
       const dob = document.getElementById('p_dob').value;
       const bp = document.getElementById('p_birthplace').value.trim();
       const res = document.getElementById('p_residence').value.trim();
-      const photo = document.getElementById('p_photo').files[0];
-      const photoName = photo ? photo.name : "未上傳 (請事後補件)";
-
+      const photoFile = document.getElementById('p_photo').files[0]; // 取得照片檔案
+      
       if(!name || !dob || !bp || !res) { alert("請填寫完整資料！"); return; }
 
       let price = 0;
       let lampNames = [];
       lamps.forEach(l => { price += parseInt(l.dataset.price); lampNames.push(l.value); });
 
-      orderList.push({ id: Date.now(), name, dob, birthplace: bp, residence: res, photo: photoName, lamps: lampNames.join(', '), price });
+      // 暫存時，將 photoFile 存入，顯示時只顯示 "已選取"
+      orderList.push({ 
+        id: Date.now(), 
+        name, dob, birthplace: bp, residence: res, 
+        photoFile: photoFile, // 檔案物件
+        photoName: photoFile ? "待上傳..." : "無照片",
+        lamps: lampNames.join(', '), 
+        price 
+      });
       
       renderList();
       resetForm();
@@ -383,7 +389,7 @@
       let html = '', total = 0;
       orderList.forEach(p => {
         total += p.price;
-        html += `<div class="order-item"><div><strong>👤 ${p.name}</strong><div>${p.lamps}</div></div><div style="text-align:right"><div class="order-price">NT$ ${p.price.toLocaleString()}</div><button class="btn-remove" onclick="remove(${p.id})">刪除</button></div></div>`;
+        html += `<div class="order-item"><div><strong>👤 ${p.name}</strong><div>${p.lamps}</div><div style="font-size:12px;color:#94a3b8">照片：${p.photoFile ? '已選取 (送出後上傳)' : '無'}</div></div><div style="text-align:right"><div class="order-price">NT$ ${p.price.toLocaleString()}</div><button class="btn-remove" onclick="remove(${p.id})">刪除</button></div></div>`;
       });
       el.innerHTML = html;
       document.getElementById('finalPrice').textContent = "NT$ " + total.toLocaleString();
@@ -401,58 +407,88 @@
       document.getElementById('p_photo').value = '';
     }
 
+    // 🔥 最終送出：上傳圖片 + 寫入資料庫 + 顯示付款按鈕
     async function submitFinalOrder() {
       if (orderList.length === 0) { alert("名單是空的！"); return; }
       
-      // 1. 顯示「處理中」Modal
       const modal = document.getElementById('loadingModal');
       const modalBody = document.getElementById('modalBody');
       
-      // 重置為 Loading 狀態
-      modalBody.innerHTML = `
-        <div class="spinner"></div>
-        <h3 style="color:#fff; margin-bottom:10px;">訂單處理中...</h3>
-        <p>正在建立您的專屬能量檔案</p>
-      `;
-      
+      // 1. 顯示 Loading
+      modalBody.innerHTML = `<div class="spinner"></div><h3 style="color:#fff; margin-bottom:10px;">訂單處理中...</h3><p>正在上傳照片並建立檔案</p>`;
       modal.style.display = 'flex';
 
-      const dataToInsert = orderList.map(person => ({
-        name: person.name,
-        dob: person.dob,
-        birthplace: person.birthplace,
-        residence: person.residence,
-        photo: person.photo,
-        lamps: person.lamps,
-        price: person.price,
-        created_at: new Date()
-      }));
+      try {
+        const finalData = [];
 
-      // 2. 寫入資料庫
-      const { data, error } = await sbClient
-        .from('2026WAVE')
-        .insert(dataToInsert);
+        // 2. 逐筆處理 (上傳照片 -> 取得網址 -> 準備資料)
+        for (const person of orderList) {
+          let publicUrl = "未上傳";
 
-      if (error) {
-        console.error('Supabase Error:', error);
-        modal.style.display = 'none'; // 失敗時關閉 Modal
-        alert("資料傳送失敗，請檢查網路或聯繫客服。");
-      } else {
-        // 3. 🔥 成功！不關閉 Modal，而是「原地變身」為付款引導
-        // 這樣用戶點擊按鈕時，就是「主動點擊」，瀏覽器絕對不會擋
+          // 如果有選照片，執行上傳
+          if (person.photoFile) {
+            const fileExt = person.photoFile.name.split('.').pop();
+            // 檔名加上時間戳記避免重複
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            
+            // 上傳到 'photos' bucket
+            const { error: uploadError } = await sbClient.storage
+              .from('photos')
+              .upload(fileName, person.photoFile);
+
+            if (uploadError) {
+              console.error('上傳失敗:', uploadError);
+              throw new Error("照片上傳失敗，請重試或聯繫客服");
+            }
+
+            // 取得公開連結
+            const { data: urlData } = sbClient.storage
+              .from('photos')
+              .getPublicUrl(fileName);
+            
+            publicUrl = urlData.publicUrl;
+          }
+
+          // 準備寫入資料庫的物件
+          finalData.push({
+            name: person.name,
+            dob: person.dob,
+            birthplace: person.birthplace,
+            residence: person.residence,
+            photo: publicUrl, // 存入真正的網址
+            lamps: person.lamps,
+            price: person.price,
+            created_at: new Date()
+          });
+        }
+
+        // 3. 寫入資料表 (2026WAVE)
+        const { error: dbError } = await sbClient
+          .from('2026WAVE')
+          .insert(finalData);
+
+        if (dbError) throw dbError;
+
+        // 4. ✅ 成功！顯示付款按鈕
+        // 🔥 這裡的關閉按鈕，現在只會「隱藏」視窗，保留原本的網頁內容
         modalBody.innerHTML = `
           <div style="font-size:48px; margin-bottom:16px;">🎉</div>
           <h3 style="color:#fff; margin-bottom:12px;">訂單已成立！</h3>
-          <p style="margin-bottom:24px; color:#94a3b8; font-size:14px;">資料已安全存檔。<br>請點擊下方按鈕，開啟新視窗完成付款。</p>
+          <p style="margin-bottom:24px; color:#94a3b8; font-size:14px;">資料與照片已成功存檔。<br>請點擊下方按鈕，開啟新視窗完成付款。</p>
           
-          <a href="https://p.ecpay.com.tw/58E73CC" target="_blank" class="btn btn-primary" style="width:100%; text-decoration:none; display:flex; margin-bottom:12px;">
+          <a href="https://p.ecpay.com.tw/58E73CC" target="_blank" class="btn btn-primary" style="width:100%; text-decoration:none; display:flex; justify-content:center; margin-bottom:12px;">
             前往付款 (開啟新視窗) ➔
           </a>
           
-          <button onclick="location.reload()" class="btn btn-outline" style="width:100%; border:none; font-size:13px; color:#64748b;">
+          <button onclick="document.getElementById('loadingModal').style.display='none'" class="btn btn-outline" style="width:100%; border:none; font-size:13px; color:#64748b;">
             已完成付款？關閉視窗
           </button>
         `;
+
+      } catch (err) {
+        console.error(err);
+        modal.style.display = 'none'; // 失敗關閉 Modal 讓用戶重試
+        alert("處理失敗：" + (err.message || "請檢查網路"));
       }
     }
   </script>
