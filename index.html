@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>艾伯林量子調頻｜年度專屬守護</title>
+  <meta name="description" content="為你的大腦開啟主動降噪模式，在赤馬紅羊年找回核心節奏。" />
+
+  <style>
+    :root {
+      --bg: #030407; --surface: #0f1218; --surface-light: #1c212c;
+      --border: rgba(255,255,255,0.08); --primary: #60a5fa; --primary-glow: rgba(96,165,250,0.4);
+      --accent: #a78bfa; --fire: #f43f5e; --love: #f472b6; --text: #f1f5f9; --text-muted: #94a3b8; --success: #10b981;
+    }
+    * { box-sizing: border-box; } html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: "PingFang TC", system-ui, sans-serif; line-height: 1.7; overflow-x: hidden; }
+    
+    .container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 80px 0; border-bottom: 1px solid var(--border); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+    .text-center { text-align: center; } .mb-4 { margin-bottom: 24px; }
+    h1, h2, h3 { margin: 0 0 16px; font-weight: 700; line-height: 1.3; }
+    h1 { font-size: 42px; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    h2 { font-size: 32px; color: #fff; } h3 { font-size: 20px; color: var(--text); } p { color: var(--text-muted); }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 32px; border-radius: 99px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: .2s; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; box-shadow: 0 0 20px rgba(96,165,250,0.2); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(96,165,250,0.4); }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-add { background: rgba(255,255,255,0.1); border: 1px solid var(--border); color: #fff; width: 100%; }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 32px; }
+    .header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(3,4,7,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav { height: 70px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-weight: 700; font-size: 18px; color: #fff; text-decoration: none;} .logo span { color: var(--primary); }
+    
+    .hero { padding: 140px 0 100px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 1000px; height: 800px; background: radial-gradient(circle, rgba(96,165,250,0.15), transparent 70%); pointer-events: none; }
+    .hero-tag { display: inline-block; padding: 6px 16px; border-radius: 99px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); font-size: 13px; color: var(--primary); margin-bottom: 20px; }
+
+    .offer-box { background: rgba(255,255,255,0.02); border: 1px solid var(--primary-glow); border-radius: 30px; padding: 40px; }
+    .combo-wrapper { margin-bottom: 30px; text-align: center; }
+    .combo-btns { display: flex; gap: 12px; overflow-x: auto; padding: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .combo-btns::-webkit-scrollbar { display: none; }
+    .btn-chip { flex: 0 0 auto; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 99px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+    .btn-chip:hover { background: rgba(96,165,250,0.15); border-color: var(--primary); color: #fff; }
+
+    .lamps-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 30px; }
+    .lamp-card { display: block; position: relative; cursor: pointer; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: .2s; }
+    .lamp-card input { position: absolute; opacity: 0; }
+    .lamp-card:has(input:checked) { border-color: var(--primary); background: rgba(96,165,250,0.08); box-shadow: 0 0 20px rgba(96,165,250,0.15); }
+    .lamp-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .lamp-icon { font-size: 28px; } .lamp-title { font-weight: 700; font-size: 18px; color: #fff; }
+    .lamp-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px; min-height: 44px; }
+    .lamp-price { font-weight: 700; color: var(--primary); font-size: 16px; text-align: right; }
+
+    .person-form { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 30px; }
+    .form-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-input { width: 100%; background: #000; border: 1px solid var(--border); color: #fff; padding: 12px; border-radius: 10px; font-size: 14px; outline: none; }
+    .full-width { grid-column: 1 / -1; }
+
+    .order-item { display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 16px; border-radius: 12px; margin-bottom: 10px; }
+    .order-info strong { color: #fff; } .order-price { font-weight: 700; color: var(--success); }
+    .btn-remove { background: none; border: none; color: #fb7185; cursor: pointer; }
+
+    /* Comparison Cards */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+    .compare-card { padding: 30px; border-radius: 24px; border: 1px solid var(--border); background: var(--surface); position: relative; overflow: hidden; }
+    .compare-card.highlight { border-color: var(--primary-glow); background: linear-gradient(180deg, rgba(96,165,250,0.08), var(--surface)); }
+    .badge-top { display: inline-block; padding: 6px 12px; border-radius: 99px; font-size: 12px; margin-bottom: 16px; border: 1px solid var(--border); }
+    .check-list { list-style: none; padding: 0; margin: 20px 0 0 0; }
+    .check-list li { display: flex; gap: 10px; margin-bottom: 12px; font-size: 14px; color: var(--text-muted); align-items: start; }
+    .check-list li b { color: #fff; }
+
+    /* Modal (Loading/Success) */
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 200; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: var(--surface); padding: 40px; border-radius: 24px; border: 1px solid var(--border); text-align: center; max-width: 400px; width: 100%; }
+    .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    @media (min-width: 768px) { .lamps-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) { 
+      .grid-2, .form-grid, .compare-grid { grid-template-columns: 1fr; } 
+      .checkout-bar { flex-direction: column; gap: 16px; text-align: center; bottom: 0; }
+      .btn-block { width: 100%; }
+      .combo-wrapper { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo"><span>◆</span> Abliene 艾伯林量子調頻</a>
+      <a href="#offer" class="btn btn-primary" style="padding: 8px 20px; font-size: 14px; margin:0;">立即預約</a>
+    </div>
+  </header>
+
+  <section class="hero text-center">
+    <div class="container">
+      <span class="hero-tag">2026 年度限定專案</span>
+      <h1 class="mb-4">為你的大腦<br>開啟「主動降噪」模式</h1>
+      <p style="max-width: 600px; margin: 0 auto 32px;">
+        登出集體焦慮，即使在動盪之年，依然精準決策。<br>
+        運用信息場技術為你定期「清理快取」，跑出更順的效能。
+      </p>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="#concept" class="btn btn-outline">小白說明：這原理是什麼？</a>
+        <a href="#offer" class="btn btn-primary">直接看專屬守護</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="concept" class="section">
+    <div class="container">
+      <div class="text-center" style="max-width: 700px; margin: 0 auto;">
+        <h2>看不見，不代表不存在</h2>
+        <p>很多時候你覺得「累」、「卡」，不是能力問題，而是「頻寬」被佔用了。</p>
+      </div>
+      <div class="analogy-box" style="margin-top:40px">
+        <div class="grid-2">
+          <div>
+            <span class="icon-large">📱</span>
+            <h3>想像大腦是一支手機</h3>
+            <p style="text-align: left;">背景程式開太多會發燙、耗電。生活中這些背景程式就是：殘留的情緒、他人的投射、環境的雜訊。</p>
+          </div>
+          <div style="text-align: left; padding-left: 20px; border-left: 1px solid var(--border);">
+            <h3 style="color:var(--primary)">艾伯林在做什麼？</h3>
+            <p>使用量子儀器遠端偵測並「關閉」消耗能量的背景程式。<br>✅ 釋放記憶體 ✅ 降溫冷卻 ✅ 系統流暢</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid-2">
+        <div>
+          <span style="color: var(--fire); font-weight: 700; letter-spacing: 1px;">2026 關鍵趨勢</span>
+          <h2 style="margin-top: 10px;">為什麼今年特別需要「穩壓」？</h2>
+          <p>傳統俗稱的「赤馬紅羊年」，代表「極致的火元素」，大環境電壓飆升。敏感的人容易躁動、睡不好。</p>
+          <div class="card" style="margin-top: 20px; background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.2);">
+            <p style="color: var(--fire); margin: 0;"><strong>不調頻會怎樣？</strong><br>容易在正負能量間劇烈擺盪。我們的目標是讓你保持在正向且持續上升的軌道。</p>
+          </div>
+        </div>
+        <div>
+          <div style="background: var(--surface); padding: 30px; border-radius: 20px; border: 1px solid var(--border);">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+              <span style="font-size: 14px; color: var(--text-muted);">能量波動示意圖</span>
+            </div>
+            <svg viewBox="0 0 500 250" width="100%">
+              <defs><linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#60a5fa" stop-opacity=".3"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></linearGradient></defs>
+              <line x1="40" y1="20" x2="40" y2="220" stroke="#64748b" stroke-width="2"/><line x1="40" y1="120" x2="480" y2="120" stroke="#64748b" stroke-width="1" stroke-dasharray="4"/>
+              <text x="25" y="30" fill="#fff" text-anchor="middle">＋</text><text x="25" y="125" fill="#94a3b8" text-anchor="middle">0</text><text x="25" y="220" fill="#94a3b8" text-anchor="middle">－</text>
+              <path d="M40,120 C60,100 100,130 140,150 200,130 240,150 280,110 340,130 380,140 420,100 450,110" fill="none" stroke="#f43f5e" stroke-width="2" stroke-opacity="0.8"/>
+              <path d="M40,80 C90,90 150,50 200,60 250,70 310,30 360,40 420,40 450,20" fill="none" stroke="#60a5fa" stroke-width="3"/>
+              <path d="M40,80 C90,90 150,50 200,60 250,70 310,30 360,40 420,40 450,20 V 250 H 40 Z" fill="url(#gB)" stroke="none"/>
+              <text x="460" y="20" fill="#60a5fa" font-size="12" font-weight="bold">調整後</text>
+              <text x="460" y="110" fill="#f43f5e" font-size="12">一般</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: linear-gradient(180deg, var(--bg), var(--surface));">
+    <div class="container">
+      <div class="grid-2">
+        <div style="position: relative;">
+          <div style="aspect-ratio: 1/1; border-radius: 24px; overflow: hidden; border: 1px solid var(--border); background: var(--surface-light);">
+            <img src="erick_photo.png" alt="Erick" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7) contrast(1.1) saturate(0.8);">
+          </div>
+          <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 99px; border: 1px solid var(--border); backdrop-filter: blur(4px); max-width: 90%;">
+            <span style="font-size: 13px; color: #fff; line-height: 1.4; display: block;">艾伯林量子調頻、平衡空間、<br>初八信息顧問創辦人</span>
+          </div>
+        </div>
+        <div>
+          <h2 style="margin-bottom: 24px;">讓數據說話，<br>而不是依賴直覺。</h2>
+          <h3 style="color: var(--primary); margin-bottom: 16px;">我是 Erick，你的信息場架構師。</h3>
+          <p>身為 <strong>初八信息顧問公司</strong> 創辦人，我發現「人」是系統最關鍵的變數。當決策者頻率混亂，再好的模式也跑不動。</p>
+          <p>我將「系統工程思維」帶入能量領域。沒有玄虛儀式，只有精準的<strong>「偵測、校準、優化」</strong>。</p>
+          <div style="margin-top: 30px; display: flex; gap: 20px;">
+            <div><div style="font-weight: 700; font-size: 24px; color: #fff;">300+</div><div style="font-size: 12px; color: var(--text-muted);">諮詢案例</div></div>
+            <div style="width: 1px; background: var(--border);"></div>
+            <div><div style="font-weight: 700; font-size: 24px; color: #fff;">TimeWaver</div><div style="font-size: 12px; color: var(--text-muted);">專業儀器認證</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2>哪一種支持適合你？</h2>
+        <p>今年我們提供兩種支持，功能不同，但可以一起使用。</p>
+      </div>
+      
+      <div class="compare-grid">
+        <div class="compare-card">
+          <span class="badge-top">365 能量氣象台</span>
+          <h3>大家一起走得順</h3>
+          <p style="margin-bottom:20px; font-size:14px; min-height:42px;">這是群發頻率與吉凶日提醒。跟上集體的大節奏，在共振中省力前行，知道何時該衝、何時該守。</p>
+          <ul class="check-list">
+            <li>✅ 每週節奏提醒</li>
+            <li>✅ 吉凶日能量預報</li>
+            <li>✅ 群體共振支持</li>
+          </ul>
+        </div>
+        
+        <div class="compare-card highlight">
+          <h3 style="color:var(--primary); margin-top: 10px;">一個人走很專注</h3>
+          <p style="margin-bottom:20px; font-size:14px; min-height:42px;">這是「專門為你」做的守護支持。關閉外界干擾，專注校準你個人的核心頻率，走得更深、更穩。</p>
+          <ul class="check-list">
+            <li>✅ <b>個人專屬頻率</b> (非群發)</li>
+            <li>✅ <b>每季校準</b> (1年4次) 拉回主頻</li>
+            <li>✅ <b>緊急呼救 4 次/年</b> (狀態下滑急救)</li>
+            <li>✅ 包含所有 365 氣象台功能</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="offer" class="section">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2>年度專屬守護專案</h2>
+        <p style="color:var(--primary); font-weight:bold; font-size:18px;">個人專屬頻率｜每季校準｜緊急呼救 4 次/年</p>
+      </div>
+
+      <div class="offer-box">
+        
+        <div style="text-align:center; margin-bottom: 30px; padding: 20px; background: rgba(96,165,250,0.1); border-radius: 16px; border: 1px dashed var(--primary-glow);">
+          <p style="color:#fff; margin:0; font-size:15px; line-height:1.6;">
+            如果你今年只想要一個結果：<br>
+            <strong style="font-size:18px; color:var(--primary);">穩住、少出事、少內耗</strong><br>
+            那你要的是「年度專屬守護」。
+          </p>
+        </div>
+
+        <div class="combo-wrapper">
+          <span style="font-size:13px; color:var(--text-muted); display:block; margin-bottom:12px;">顧問建議組合 (左右滑動)：</span>
+          <div class="combo-btns">
+            <button class="btn-chip" onclick="applyCombo('basic')">🛡️ 基本守護 (定錨+降噪)</button>
+            <button class="btn-chip" onclick="applyCombo('career')">🚀 事業學業 (加速+光啟)</button>
+            <button class="btn-chip" onclick="applyCombo('money')">💰 錢一直漏 (擴容+定錨)</button>
+            <button class="btn-chip" onclick="applyCombo('love')">❤️ 桃花人緣 (共振+光啟)</button>
+            <button class="btn-chip" onclick="applyCombo('all')">💎 我全都要 (六大頻率)</button>
+          </div>
+        </div>
+
+        <form id="orderForm" onsubmit="return false;">
+          <div class="lamps-grid">
+            <label class="lamp-card"><input type="checkbox" name="lamp" value="年度定錨" data-price="2200"><div class="lamp-content"><div class="lamp-header"><span class="lamp-icon">🏔️</span><span class="lamp-title">年度定錨頻率</span></div><div class="lamp-desc">先穩住主頻。適合防突發、降風險。</div><div class="lamp-price">NT$ 2,200</div></div></label>
+            <label class="lamp-card"><input type="checkbox" name="lamp" value="運勢光啟" data-price="2200"><div class="lamp-content"><div class="lamp-header"><span class="lamp-icon">☀️</span><span class="lamp-title">運勢光啟頻率</span></div><div class="lamp-desc">把自己拉回來，開始順。適合運勢卡卡。</div><div class="lamp-price">NT$ 2,200</div></div></label>
+            <label class="lamp-card"><input type="checkbox" name="lamp" value="思維加速" data-price="2200"><div class="lamp-content"><div class="lamp-header"><span class="lamp-icon">⚡️</span><span class="lamp-title">思維加速頻率</span></div><div class="lamp-desc">腦內雜訊下降。適合考試、升遷、專注。</div><div class="lamp-price">NT$ 2,200</div></div></label>
+            <label class="lamp-card"><input type="checkbox" name="lamp" value="豐盛擴容" data-price="2200"><div class="lamp-content"><div class="lamp-header"><span class="lamp-icon">🏦</span><span class="lamp-title">豐盛擴容頻率</span></div><div class="lamp-desc">讓錢留得住。適合現金流不穩、補漏財。</div><div class="lamp-price">NT$ 2,200</div></div></label>
+            <label class="lamp-card"><input type="checkbox" name="lamp" value="身心降噪" data-price="2200"><div class="lamp-content"><div class="lamp-header"><span class="lamp-icon">🧘</span><span class="lamp-title">身心降噪頻率</span></div><div class="lamp-desc">耗損降下來，身體回來。適合睡眠差、壓力大。</div><div class="lamp-price">NT$ 2,200</div></div></label>
+            <label class="lamp-card" style="border-color:rgba(244,114,182,0.3)"><input type="checkbox" name="lamp" value="情感共振" data-price="2200"><div class="lamp-content"><div class="lamp-header"><span class="lamp-icon">💞</span><span class="lamp-title">情感共振頻率</span></div><div class="lamp-desc">吸引對頻的人。適合招桃花、關係和諧。</div><div class="lamp-price">NT$ 2,200</div></div></label>
+          </div>
+
+          <div class="person-form">
+            <div class="form-title">📝 填寫資料 (按下加入名單後，可填下一位)</div>
+            <div class="form-grid">
+              <div class="form-group"><label>姓名 *</label><input type="text" id="p_name" class="form-input" placeholder="請輸入本名"></div>
+              <div class="form-group"><label>個人照片 (選填)</label><input type="file" id="p_photo" class="form-input" accept="image/*"></div>
+              <div class="form-group"><label>出生日期 *</label><input type="date" id="p_dob" class="form-input"></div>
+              <div class="form-group"><label>出生地 (縣市) *</label><input type="text" id="p_birthplace" class="form-input" placeholder="例如：台北市"></div>
+              <div class="form-group full-width"><label>目前居住地 (縣市) *</label><input type="text" id="p_residence" class="form-input" placeholder="例如：台中市"></div>
+            </div>
+            <button type="button" class="btn btn-primary btn-add" onclick="addToOrder()">確認並加入名單 ＋</button>
+          </div>
+
+          <div id="orderListSection" style="display:none; margin-bottom:20px;">
+            <div class="form-title">📋 待結帳名單</div>
+            <div id="orderList" class="order-list"></div>
+          </div>
+
+          <div class="checkout-bar">
+            <div style="display:flex; flex-direction:column"><span style="font-size:14px; color:var(--text-muted)">訂單總金額：</span><span id="finalPrice" class="price-big">NT$ 0</span></div>
+            <button type="button" onclick="submitFinalOrder()" class="btn btn-primary btn-block">送出訂單並付款</button>
+          </div>
+          
+          <div style="margin-top:24px; padding-top:16px; border-top:1px dashed var(--border);">
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:8px;">📦 <strong>統一交付標準：</strong></p>
+            <ul style="font-size:13px; color:var(--text-muted); padding-left:20px; margin:0;">
+              <li><strong>啟動通知</strong>：付款成功後，48 小時內完成定錨並回報。</li>
+              <li><strong>年度守護</strong>：包含一整年的背景頻率支持 (2026/02 - 2027/01)。</li>
+              <li><strong>每季提醒</strong>：每季發送一次能量氣象報告。</li>
+              <li><strong>重要時刻</strong>：365能量氣象台，關鍵節點主動推播。</li>
+            </ul>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div style="margin-bottom:20px;"><span style="font-weight:700; color:#fff;">Abliene 艾伯林量子調頻</span></div>
+      <p>Copyright © 2026 Abliene Quantum Tuning. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div id="loadingModal" class="modal">
+    <div class="modal-content">
+      <div class="spinner"></div>
+      <h3 style="color:#fff; margin-bottom:10px;">訂單處理中...</h3>
+      <p>正在建立您的專屬能量檔案</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // 🔥 【SUPABASE 設定】
+    const SUPABASE_URL = 'https://wbbnjasjyfuatkvnoogi.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_OGI7Yxdo3d3phH6pAeeLww_sMu12Hs1';
+    
+    // 初始化 Supabase
+    const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    let orderList = [];
+
+    // FAQ 開關
+    document.querySelectorAll('.faq-q').forEach(item => {
+      item.addEventListener('click', () => {
+        const parent = item.parentElement;
+        const isActive = parent.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.faq-q span').forEach(sp => sp.textContent = '+');
+        if (!isActive) { parent.classList.add('active'); item.querySelector('span').textContent = '-'; }
+      });
+    });
+
+    function updateTempPrice() {} // 暫存
+
+    function applyCombo(type) {
+      document.querySelectorAll('input[name="lamp"]').forEach(b => b.checked = false);
+      const lamps = document.querySelectorAll('input[name="lamp"]');
+      if(type==='basic'){ s('年度定錨');s('身心降噪'); }
+      else if(type==='career'){ s('思維加速');s('運勢光啟'); }
+      else if(type==='money'){ s('豐盛擴容');s('年度定錨'); }
+      else if(type==='love'){ s('情感共振');s('運勢光啟'); }
+      else if(type==='all'){ lamps.forEach(b => b.checked = true); }
+    }
+    function s(val){ const e=document.querySelector(`input[value="${val}"]`); if(e) e.checked=true; }
+
+    function addToOrder() {
+      const lamps = Array.from(document.querySelectorAll('input[name="lamp"]:checked'));
+      if(lamps.length === 0) { alert("請至少勾選一個頻率！"); return; }
+      
+      const name = document.getElementById('p_name').value.trim();
+      const dob = document.getElementById('p_dob').value;
+      const bp = document.getElementById('p_birthplace').value.trim();
+      const res = document.getElementById('p_residence').value.trim();
+      const photo = document.getElementById('p_photo').files[0];
+      const photoName = photo ? photo.name : "未上傳 (請事後補件)";
+
+      if(!name || !dob || !bp || !res) { alert("請填寫完整資料！"); return; }
+
+      let price = 0;
+      let lampNames = [];
+      lamps.forEach(l => { price += parseInt(l.dataset.price); lampNames.push(l.value); });
+
+      orderList.push({ id: Date.now(), name, dob, birthplace: bp, residence: res, photo: photoName, lamps: lampNames.join(', '), price });
+      
+      renderList();
+      resetForm();
+      alert(`已加入 ${name}！請繼續填寫下一位，或按下方按鈕結帳。`);
+    }
+
+    function renderList() {
+      const el = document.getElementById('orderList');
+      const sec = document.getElementById('orderListSection');
+      sec.style.display = orderList.length ? 'block' : 'none';
+      let html = '', total = 0;
+      orderList.forEach(p => {
+        total += p.price;
+        html += `<div class="order-item"><div><strong>👤 ${p.name}</strong><div>${p.lamps}</div></div><div style="text-align:right"><div class="order-price">NT$ ${p.price.toLocaleString()}</div><button class="btn-remove" onclick="remove(${p.id})">刪除</button></div></div>`;
+      });
+      el.innerHTML = html;
+      document.getElementById('finalPrice').textContent = "NT$ " + total.toLocaleString();
+    }
+
+    function remove(id) {
+      if(confirm("移除此人？")) { orderList = orderList.filter(p => p.id !== id); renderList(); }
+    }
+
+    function resetForm() {
+      document.getElementById('p_name').value = '';
+      document.getElementById('p_dob').value = '';
+      document.getElementById('p_birthplace').value = '';
+      document.getElementById('p_residence').value = '';
+      document.getElementById('p_photo').value = '';
+    }
+
+    async function submitFinalOrder() {
+      if (orderList.length === 0) { alert("名單是空的！"); return; }
+      
+      const modal = document.getElementById('loadingModal');
+      modal.style.display = 'flex';
+
+      const dataToInsert = orderList.map(person => ({
+        name: person.name,
+        dob: person.dob,
+        birthplace: person.birthplace,
+        residence: person.residence,
+        photo: person.photo,
+        lamps: person.lamps,
+        price: person.price,
+        created_at: new Date()
+      }));
+
+      // 使用 sbClient 寫入 2026WAVE 資料表
+      const { data, error } = await sbClient
+        .from('2026WAVE')
+        .insert(dataToInsert);
+
+      modal.style.display = 'none';
+
+      if (error) {
+        console.error('Supabase Error:', error);
+        alert("資料傳送失敗，請檢查網路或聯繫客服。");
+      } else {
+        alert("🎉 訂單已送出！\n\n系統已完成資料庫定錨。\n按下確定後將跳轉至付款頁面...");
+        // window.location.href = "YOUR_PAYMENT_URL"; 
+        location.reload(); 
+      }
+    }
+  </script>
+</body>
+</html>

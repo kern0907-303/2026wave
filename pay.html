@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>艾伯林能量調頻｜付款</title>
+  <meta name="description" content="艾伯林能量調頻｜付款頁面：刷卡 / 匯款 / 轉帳" />
+  <style>
+    :root{
+      --bg:#0b0f14; --text:#e8eef6; --muted:#a9b4c0; --line:#223244;
+      --card: rgba(255,255,255,.03);
+      --brand:#7dd3fc; --brand2:#a78bfa;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --r: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;font-family: ui-sans-serif, system-ui, -apple-system, "PingFang TC","Noto Sans TC", Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 18% 10%, rgba(125,211,252,.14), transparent 60%),
+        radial-gradient(900px 500px at 82% 18%, rgba(167,139,250,.12), transparent 60%),
+        var(--bg);
+    }
+    .wrap{max-width:900px;margin:0 auto;padding:28px 18px 60px}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--r);
+      box-shadow: var(--shadow);
+      padding:18px;
+    }
+    .top{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));}
+    h1{margin:0;font-size:26px}
+    p{margin:8px 0;color:var(--muted);line-height:1.8}
+    .btnRow{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+    .btn{
+      display:flex;justify-content:space-between;align-items:center;gap:10px;
+      padding:14px 14px;border-radius:16px;
+      text-decoration:none;font-weight:800;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      color:var(--text);
+      transition:.15s transform,.2s opacity,.2s box-shadow;
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow: 0 12px 40px rgba(125,211,252,.12)}
+    .tag{
+      font-size:12px;color:#081018;font-weight:900;
+      padding:6px 10px;border-radius:999px;
+      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.92));
+    }
+    .small{font-size:12px;color:var(--muted)}
+    .bank{
+      margin-top:14px;padding:14px;border-radius:16px;
+      border:1px dashed rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+    }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
+    .back{
+      margin-top:14px;display:inline-block;color:var(--muted);text-decoration:none;
+      border:1px solid rgba(255,255,255,.10);padding:10px 12px;border-radius:999px;
+      background: rgba(255,255,255,.03);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div class="brand"><span class="logo" aria-hidden="true"></span> 艾伯林能量調頻</div>
+        <a class="back" href="index.html#join">← 返回表單</a>
+      </div>
+
+      <h1 id="title">付款方式</h1>
+      <p id="hello"></p>
+
+      <p>
+        你正在加入：<b>年度安穩護航</b><br/>
+        請選擇付款方式完成付款。付款完成後，我們會以你留下的聯絡方式安排開年定錨與後續節奏。
+      </p>
+
+      <div class="btnRow">
+        <!-- TODO：替換成你的刷卡付款連結（綠界/藍新/Stripe/Line Pay等） -->
+        <a class="btn" id="cardLink" href="https://example.com/pay/card" target="_blank" rel="noopener">
+          <span>刷卡付款</span>
+          <span class="tag">Card</span>
+        </a>
+
+        <!-- TODO：替換成你的匯款/轉帳資訊頁（可以是Notion頁、Google文件、或自家頁面） -->
+        <a class="btn" id="bankLink" href="https://example.com/pay/bank" target="_blank" rel="noopener">
+          <span>匯款 / 轉帳（查看帳戶資訊）</span>
+          <span class="tag">Bank</span>
+        </a>
+
+        <!-- TODO：若你想讓客戶看「全部方式」或其他支付 -->
+        <a class="btn" id="allLink" href="https://example.com/pay/all" target="_blank" rel="noopener">
+          <span>查看全部付款方式</span>
+          <span class="tag">All</span>
+        </a>
+      </div>
+
+      <div class="bank">
+        <div style="font-weight:800;margin-bottom:6px;">（可選）也可以直接在此頁顯示轉帳資訊</div>
+        <div class="small">若你想把帳戶直接寫在這裡，把下列內容改成你的資訊即可：</div>
+        <p class="mono">
+          銀行：XXX銀行（代碼000）<br/>
+          帳號：000-0000-0000-000<br/>
+          戶名：艾伯林／你的公司名<br/>
+          付款後請回傳：末五碼＋轉帳時間
+        </p>
+      </div>
+
+      <p class="small">
+        提醒：若你使用的是第三方金流（綠界/藍新/Stripe），建議用「付款連結」或「結帳頁」，
+        這樣客戶不需要手動對帳，轉換率也最高。
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // 讀取剛才表單資料（純前端）
+    const params = new URLSearchParams(location.search);
+    const name = params.get("name") || "";
+    const pm = params.get("pm") || "";
+
+    const hello = document.getElementById("hello");
+    if(name){
+      hello.textContent = `嗨 ${name}，下面選擇你方便的付款方式即可。`;
+    }
+
+    // 根據偏好付款方式，微調標題（讓人感覺「被理解」）
+    const title = document.getElementById("title");
+    if(pm === "card") title.textContent = "刷卡付款";
+    else if(pm === "bank") title.textContent = "匯款 / 轉帳";
+    else title.textContent = "付款方式";
+
+    // 如果你想把「價格/訂單資訊」也顯示，可從 localStorage 讀取
+    // const lead = JSON.parse(localStorage.getItem("abelin_lead") || "null");
+    // console.log(lead);
+  </script>
+</body>
+</html>
