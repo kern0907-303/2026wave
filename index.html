@@ -397,9 +397,10 @@
       alert(`已加入 ${name}！請繼續填寫下一位，或按下方按鈕結帳。`);
     }
 
-    // 🔥 【新增】驗證並套用折扣碼
+    // 🔥 【修改】驗證並套用折扣碼 (支援大小寫)
     function applyCoupon() {
-      const code = document.getElementById('couponInput').value.trim();
+      // 這裡加上了 .toUpperCase()，將輸入轉為大寫
+      const code = document.getElementById('couponInput').value.trim().toUpperCase();
       const msgEl = document.getElementById('couponMsg');
       
       if (code === '365VIP') {
