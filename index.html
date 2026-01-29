@@ -280,6 +280,14 @@
             <div id="orderList" class="order-list"></div>
           </div>
 
+          <div class="discount-section" style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:20px;">
+            <div style="font-size:14px; color:#fff; margin-bottom:12px; font-weight:bold;">🎫 優惠代碼</div>
+            <div style="display:flex; gap:10px;">
+              <input type="text" id="couponInput" class="form-input" placeholder="請輸入折扣碼" style="margin:0;">
+              <button type="button" class="btn btn-outline" onclick="applyCoupon()" style="white-space:nowrap; padding:0 24px;">套用</button>
+            </div>
+            <div id="couponMsg" style="font-size:13px; margin-top:10px; min-height:20px;"></div>
+          </div>
           <div class="checkout-bar">
             <div style="display:flex; flex-direction:column"><span style="font-size:14px; color:var(--text-muted)">訂單總金額：</span><span id="finalPrice" class="price-big">NT$ 0</span></div>
             <button type="button" onclick="submitFinalOrder()" class="btn btn-primary btn-block">送出訂單並付款</button>
@@ -327,8 +335,11 @@
     const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
     let orderList = [];
+    
+    // 🔥 【新增】全域變數：目前每盞燈的折扣金額
+    let currentDiscountPerLamp = 0;
 
-    // FAQ 開關
+    // FAQ 開關 (保留原本功能)
     document.querySelectorAll('.faq-q').forEach(item => {
       item.addEventListener('click', () => {
         const parent = item.parentElement;
@@ -350,7 +361,7 @@
     }
     function s(val){ const e=document.querySelector(`input[value="${val}"]`); if(e) e.checked=true; }
 
-    // 加入訂單暫存區 (修正版：儲存檔案物件)
+    // 🔥 【修改】加入訂單：新增記錄 "lampCount" (頻率數量) 與 "rawPrice" (原價)
     function addToOrder() {
       const lamps = Array.from(document.querySelectorAll('input[name="lamp"]:checked'));
       if(lamps.length === 0) { alert("請至少勾選一個頻率！"); return; }
@@ -363,18 +374,22 @@
       
       if(!name || !dob || !bp || !res) { alert("請填寫完整資料！"); return; }
 
-      let price = 0;
+      let rawPrice = 0;
       let lampNames = [];
-      lamps.forEach(l => { price += parseInt(l.dataset.price); lampNames.push(l.value); });
+      lamps.forEach(l => { 
+        rawPrice += parseInt(l.dataset.price); 
+        lampNames.push(l.value); 
+      });
 
       // 暫存時，將 photoFile 存入，顯示時只顯示 "已選取"
       orderList.push({ 
         id: Date.now(), 
         name, dob, birthplace: bp, residence: res, 
-        photoFile: photoFile, // 檔案物件
+        photoFile: photoFile, 
         photoName: photoFile ? "待上傳..." : "無照片",
         lamps: lampNames.join(', '), 
-        price 
+        lampCount: lamps.length, // ✅ 新增：記錄選了幾個頻率，用於計算折扣
+        rawPrice: rawPrice       // ✅ 記錄原價
       });
       
       renderList();
@@ -382,17 +397,78 @@
       alert(`已加入 ${name}！請繼續填寫下一位，或按下方按鈕結帳。`);
     }
 
+    // 🔥 【新增】驗證並套用折扣碼
+    function applyCoupon() {
+      const code = document.getElementById('couponInput').value.trim();
+      const msgEl = document.getElementById('couponMsg');
+      
+      if (code === '365VIP') {
+        currentDiscountPerLamp = 1000; // ✅ 設定折扣金額：每盞折 1000
+        msgEl.innerHTML = `<span style="color:var(--success)">🎉 365VIP 專屬優惠已套用！每項頻率折抵 NT$1,000</span>`;
+        // 鎖定輸入框避免誤改
+        document.getElementById('couponInput').disabled = true;
+        document.querySelector('.discount-section button').disabled = true;
+        document.querySelector('.discount-section button').innerText = "已套用";
+      } else {
+        currentDiscountPerLamp = 0;
+        msgEl.innerHTML = `<span style="color:#fb7185">❌ 無效的折扣碼</span>`;
+      }
+      renderList(); // 重新計算金額
+    }
+
+    // 🔥 【修改】渲染清單：顯示折扣邏輯
     function renderList() {
       const el = document.getElementById('orderList');
       const sec = document.getElementById('orderListSection');
       sec.style.display = orderList.length ? 'block' : 'none';
-      let html = '', total = 0;
+      
+      let html = '';
+      let grandTotal = 0;   // 最終應付總額
+      let totalSaved = 0;   // 總共省下多少
+
       orderList.forEach(p => {
-        total += p.price;
-        html += `<div class="order-item"><div><strong>👤 ${p.name}</strong><div>${p.lamps}</div><div style="font-size:12px;color:#94a3b8">照片：${p.photoFile ? '已選取 (送出後上傳)' : '無'}</div></div><div style="text-align:right"><div class="order-price">NT$ ${p.price.toLocaleString()}</div><button class="btn-remove" onclick="remove(${p.id})">刪除</button></div></div>`;
+        // 計算該成員的折扣
+        const personDiscount = p.lampCount * currentDiscountPerLamp;
+        const finalPersonPrice = p.rawPrice - personDiscount;
+        
+        grandTotal += finalPersonPrice;
+        totalSaved += personDiscount;
+
+        // 顯示邏輯：如果有折扣，顯示原價被劃掉
+        let priceDisplay = `NT$ ${p.rawPrice.toLocaleString()}`;
+        if (personDiscount > 0) {
+          priceDisplay = `
+            <span style="text-decoration:line-through; color:#94a3b8; font-size:12px; margin-right:5px;">NT$ ${p.rawPrice.toLocaleString()}</span>
+            <span style="color:var(--success); font-weight:bold;">NT$ ${finalPersonPrice.toLocaleString()}</span>
+          `;
+        }
+
+        html += `
+          <div class="order-item">
+            <div>
+              <strong>👤 ${p.name}</strong>
+              <div style="font-size:13px; margin-top:4px;">${p.lamps}</div>
+              <div style="font-size:12px; color:#94a3b8; margin-top:2px;">照片：${p.photoFile ? '已選取 (送出後上傳)' : '無'}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="order-price">${priceDisplay}</div>
+              <button class="btn-remove" onclick="remove(${p.id})">刪除</button>
+            </div>
+          </div>`;
       });
+
       el.innerHTML = html;
-      document.getElementById('finalPrice').textContent = "NT$ " + total.toLocaleString();
+      
+      // 更新底部總金額顯示
+      const finalPriceEl = document.getElementById('finalPrice');
+      if (totalSaved > 0) {
+        finalPriceEl.innerHTML = `
+          <div style="font-size:14px; color:#94a3b8; text-decoration:line-through; margin-bottom:-5px;">NT$ ${(grandTotal + totalSaved).toLocaleString()}</div>
+          <span style="color:var(--success)">NT$ ${grandTotal.toLocaleString()}</span>
+        `;
+      } else {
+        finalPriceEl.textContent = "NT$ " + grandTotal.toLocaleString();
+      }
     }
 
     function remove(id) {
@@ -407,7 +483,7 @@
       document.getElementById('p_photo').value = '';
     }
 
-    // 🔥 最終送出：上傳圖片 + 寫入資料庫 + 顯示付款按鈕
+    // 🔥 最終送出：上傳圖片 + 寫入資料庫 (使用折扣後價格) + 顯示付款按鈕
     async function submitFinalOrder() {
       if (orderList.length === 0) { alert("名單是空的！"); return; }
       
@@ -449,6 +525,10 @@
             publicUrl = urlData.publicUrl;
           }
 
+          // ✅ 計算每個人實際寫入資料庫的價格 (扣除折扣)
+          const personDiscount = person.lampCount * currentDiscountPerLamp;
+          const finalDbPrice = person.rawPrice - personDiscount;
+
           // 準備寫入資料庫的物件
           finalData.push({
             name: person.name,
@@ -457,7 +537,7 @@
             residence: person.residence,
             photo: publicUrl, // 存入真正的網址
             lamps: person.lamps,
-            price: person.price,
+            price: finalDbPrice, // ✅ 這裡寫入的是折扣後的金額
             created_at: new Date()
           });
         }
@@ -470,7 +550,6 @@
         if (dbError) throw dbError;
 
         // 4. ✅ 成功！顯示付款按鈕
-        // 🔥 這裡的關閉按鈕，現在只會「隱藏」視窗，保留原本的網頁內容
         modalBody.innerHTML = `
           <div style="font-size:48px; margin-bottom:16px;">🎉</div>
           <h3 style="color:#fff; margin-bottom:12px;">訂單已成立！</h3>
